@@ -1,5 +1,6 @@
 #!/bin/bash
-documents=('../practica1-1.md practica1-1')
+documents=('../practica1-1.md practica1-1' \ 
+		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
 
@@ -9,7 +10,7 @@ if [ -d img ]; then
 fi
 
 cp -rf ../img .
-git add ../img/*.*
+git add ./img/*.*
 
 selected_document=$1
 
