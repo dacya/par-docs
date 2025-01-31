@@ -1,15 +1,16 @@
 #!/bin/bash
 documents=('../practica1-1.md practica1-1' \ 
+		   '../practica1-2.md practica1-2' \ 
 		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
 
 ## Clone image directory
-if [ -d img ]; then
-	rm -rf img
-fi
+#if [ -d img ]; then
+#	rm -rf img
+#fi
 
-cp -rf ../img .
+cp ../img/*.* ./img 
 git add ./img/*.*
 
 selected_document=$1

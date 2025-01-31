@@ -1,5 +1,6 @@
 #!/bin/bash
-codes=('practica1-1 ficheros_p1-1.tar.gz')
+codes=('practica1-1 ficheros_p1-1.tar.gz'\ 
+		'practica1-2 ficheros_p1-2.tar.gz')
 
 codedir="../Codigos"
 targetcodes="${PWD}/code"
