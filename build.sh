@@ -1,6 +1,7 @@
 #!/bin/bash
 documents=('../practica1-1.md practica1-1' \ 
 		   '../practica1-2.md practica1-2' \ 
+		   '../practica1-3.md practica1-3' \ 
 		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
