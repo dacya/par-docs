@@ -1,6 +1,7 @@
 #!/bin/bash
-codes=('practica1-1 ficheros_p1-1.tar.gz'\ 
-		'practica1-2 ficheros_p1-2.tar.gz')
+codes=('practica1-1 ficheros_p1-1.tar.gz' \
+		'practica1-2 ficheros_p1-2.tar.gz' \
+		'practica1-3 ficheros_p1-3.tar.gz')
 
 codedir="../Codigos"
 targetcodes="${PWD}/code"
@@ -21,7 +22,7 @@ do
 	source_dir="${codedir}/${items[0]}/alumnos"
 	target_file="${targetcodes}/${items[1]}"
 
-	if [ ${filter_on} -eq 1 ] && [ "${selected_code}" != "${items[1]}" ]; then
+	if [ ${filter_on} -eq 1 ] && [ "${selected_code}" != "${items[0]}" ]; then
 		continue
 	fi
 

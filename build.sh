@@ -41,5 +41,3 @@ do
 	fi
 done
 
-
-rm -rf img
