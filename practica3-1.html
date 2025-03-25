@@ -437,7 +437,7 @@ del compilación cargando las variables de entorno correspondientes con
 un fichero de reportes para verificar que el código generado se descarga
 en el acelerador, añadiendo en fase de compilación el flag
 <code>-qopt-report</code>. En este caso además del fichero
-<strong>“.optrpt”</strong> también se gerera un equivalente con el
+<strong>“.optrpt”</strong> también se genera un equivalente con el
 formato <strong>“-openmp-spir64.optrpt”</strong> donde se indica la
 descarga a partir de la línea 23.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@lab:~</span> $ icpx <span class="at">-o</span> simple simple.cpp <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 <span class="at">-qopt-report</span><span class="op">=</span>2</span>
@@ -537,7 +537,7 @@ donde un <em>host</em> (habitualmente una CPU) está conectada a un
 acelerador o <em>device</em> (GPU). Las GPUs tiene diferentes
 construcciones, y jerarquías de unidades de ejecución. En el caso
 concreto de las GPU de Intel la distribución se realiza de la siguiente
-manera: - Cada dispositivo GPU posse varias <strong>GPU compute Units
+manera: - Cada dispositivo GPU posee varias <strong>GPU compute Units
 (CE)</strong> - Cada CE posee varias <strong>Unidades de Ejecución
 (EUs)</strong> o también denominados recientemente <strong>Xe Vector
 Engines (XVE)</strong> - Existe también un modelo de memoria: memoria
@@ -649,7 +649,7 @@ bucle <code>for (b = 0; b &lt; BLOCKS; b++)</code> siendo <strong>BLOCKS
 <code>LIBOMPTARGET_DEBUG=1</code> las iteraciones del bucle=4 porque
 <em>BLOCKS=4</em> se observa que el número de teams es <strong>Number of
 teams = {4, 1, 1}</strong>, es decir que <strong>solamente 4 EUs están
-siendo utilizadas simultéamente</strong></p>
+siendo utilizadas simultáneamente</strong></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> icpx <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 test_no_collapse.cpp</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
@@ -743,7 +743,8 @@ ejecución del kernel#1.</p>
 </blockquote>
 <ul>
 <li>Usar <code>omp target enter data map</code> y
-<code>omp target exit data map</code> como en el <a href="Best-practices/test_target_enter_exit_data.cpp">código</a></li>
+<code>omp target exit data map</code> como en el código
+“test_target_enter_exit_data.cpp”</li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* map data to device. alloc for w avoids map(tofrom: w[0:SIZE]) on target by default. */</span></span>
@@ -828,9 +829,9 @@ aparecen resaltadas a continuación:</p>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>fully_connected<span class="op">(</span>pooled<span class="op">,</span> fc1_weights<span class="op">,</span> fc1_biases<span class="op">,</span> output<span class="op">,</span> size_fc1_biases<span class="op">,</span> fc_input_size<span class="op">);</span></span></code></pre></div>
 <p>Para identificar con más sencillez dicha parte del código, estas
-líneas corresponde a la monitoriación del tiempo de ejecución del modelo
-entre las llamdas a la función <code>get_ms()</code> que captura el
-tiempo del sistema.</p>
+líneas corresponde a la monitorización del tiempo de ejecución del
+modelo entre las llamadas a la función <code>get_ms()</code> que captura
+el tiempo del sistema.</p>
 <h3 class="unnumbered" id="recomendaciones-propuestas">Recomendaciones
 propuestas</h3>
 <p>Para facilitar una implementación eficaz y comprensible, se presentan
