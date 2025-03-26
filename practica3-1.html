@@ -401,14 +401,14 @@ embargo nos centraremos en las cuestiones relacionadas con la descarga
 de trabajos (kernels) en un acelerador del tipo GPU.</p>
 <h2 class="unnumbered" id="ejercicio-1-hello-world">Ejercicio 1: Hello
 World</h2>
-<p>El primer ejemplo “simple.cpp” en la carpeta “HelloWorld” inicializa
-en el host un array <code>data</code>, lo duplica en el device
-(construcción <strong>target</strong>). Entre las cuestiones a tener en
-cuenta está el movimiento de datos se produce con la clausula
-<strong>map</strong>. Durante las clases hemos visto como se puede
-indicar la direccionalidad del movimiento de datos, con(<em>from</em>,
-<em>to</em>, <em>fromto</em>, ect) por lo que se recomienda al alumnado
-repasar estos aspectos.</p>
+<p>El primer ejemplo “simple.cpp” inicializa en el host un array
+<code>data</code>, lo duplica en el device (construcción
+<strong>target</strong>). Entre las cuestiones a tener en cuenta está el
+movimiento de datos se produce con la clausula <strong>map</strong>.
+Durante las clases hemos visto como se puede indicar la direccionalidad
+del movimiento de datos, con(<em>from</em>, <em>to</em>,
+<em>fromto</em>, ect) por lo que se recomienda al alumnado repasar estos
+aspectos.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Initialization</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span> data<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> i<span class="op">;</span></span>
@@ -522,7 +522,7 @@ ello, la activación de OpenMP se efectúa con el flag
 <a href="https://developer.nvidia.com/nsight-systems">NVIDIA Nsight
 Systems</a> permite monitorizar el tiempo de uso de cada kernel en la
 GPU de NVIDIA:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> nvc++ <span class="at">-o</span> simpleNVC simple.cpp  <span class="at">-mp</span><span class="op">=</span>gpu</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> /opt/nvidia/hpc_sdk/Linux_x86_64/2024/compilers/bin/nvc++ <span class="at">-o</span> simpleNVC simple.cpp  <span class="at">-mp</span><span class="op">=</span>gpu</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> nsys nvprof ./simpleNVC </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">....</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">Time</span> <span class="er">(</span><span class="ex">%</span><span class="kw">)</span>  <span class="ex">Total</span> Time <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Instances</span>  Avg <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Med</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Min</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Max</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">StdDev</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>     <span class="ex">GridXYZ</span>         BlockXYZ              Name         </span>
