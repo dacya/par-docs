@@ -1,7 +1,12 @@
 #!/bin/bash
-documents=('../practica1-1.md practica1-1' \ 
-		   '../practica1-2.md practica1-2' \ 
-		   '../practica1-3.md practica1-3' \ 
+documents=('../practica1-1.md practica1-1' \
+		   '../practica1-2.md practica1-2' \
+		   '../practica1-3.md practica1-3' \
+		   '../practica2-1.md practica2-1' \
+		   '../practica2-2.md practica2-2' \
+		   '../practica3-1.md practica3-1' \
+		   '../practica3-2.md practica3-2' \
+		   '../practica3-3.md practica3-3' \
 		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
@@ -37,7 +42,7 @@ do
 	pandoc ${source_file} -N --self-contained  --template pandoc-templates/idocs3.html-template.html --toc --highlight-style tango  -o ${target_file1}
 	if [ ${source_file} != '../index.md' ]; then
 		echo "${source_file} --> ${target_file2}"
-		pandoc ${source_file} -N --toc --highlight-style tango -o ${target_file2}
+		pandoc --mathjax ${source_file} -N --toc --highlight-style tango -o ${target_file2}
 	fi
 done
 

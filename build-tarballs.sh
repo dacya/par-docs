@@ -1,10 +1,18 @@
 #!/bin/bash
-codes=('practica1-1 ficheros_p1-1.tar.gz' \
+codes=('practica1-1 ficheros_p1-1.tar.gz'  \
 		'practica1-2 ficheros_p1-2.tar.gz' \
-		'practica1-3 ficheros_p1-3.tar.gz')
+		'practica1-3 ficheros_p1-3.tar.gz' \
+		'practica2-1 ficheros_p2-1.tar.gz' \
+		'practica2-2 ficheros_p2-2.tar.gz' \
+    	'practica3-1 ficheros_p3-1.tar.gz' \
+    	'practica3-2 ficheros_p3-2.tar.gz' \
+    	'practica3-3 ficheros_p3-3.tar.gz' \
+    	)
 
 codedir="../Codigos"
 targetcodes="${PWD}/code"
+
+
 
 ncodes=${#codes[@]}
 
@@ -20,7 +28,7 @@ for (( i=0 ; $i<$ncodes ; i++ ))
 do
 	items=(${codes[$i]})
 	source_dir="${codedir}/${items[0]}/alumnos"
-	target_file="${targetcodes}/${items[1]}"
+	target_file=${targetcodes}/${items[1]}
 
 	if [ ${filter_on} -eq 1 ] && [ "${selected_code}" != "${items[0]}" ]; then
 		continue
@@ -31,7 +39,7 @@ do
     echo "Changing to directory: $source_dir"
     cd $source_dir
     echo "Building tarball: target_file"
-    tar czvf ${target_file} *
+    tar czvf "${target_file}" *
     echo "Going back to current working directory"
     cd -
 done
