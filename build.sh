@@ -7,6 +7,7 @@ documents=('../practica1-1.md practica1-1' \
 		   '../practica3-1.md practica3-1' \
 		   '../practica3-2.md practica3-2' \
 		   '../practica3-3.md practica3-3' \
+		   '../practica4-1.md practica4-1' \
 		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
