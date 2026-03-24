@@ -465,7 +465,7 @@ aspecto con la fase de “Compiling”, además de conocer el tiempo que
 conlleva el movimiento de datos: <strong>DataRead/DataWrite</strong> así
 como el tiempo del kernel:
 **__omp_offloading_10303_16a5834__Z4main_l23**.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@lab:~</span> $ LIBOMPTARGET_PLUGIN_PROFILE=T ./simple</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@lab:~</span> $ LIBOMPTARGET_PLUGIN=OPENCL LIBOMPTARGET_PLUGIN_PROFILE=T ./simple</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Num</span> devices=1</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Running</span> on GPU</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span>
@@ -522,7 +522,7 @@ ello, la activación de OpenMP se efectúa con el flag
 <a href="https://developer.nvidia.com/nsight-systems">NVIDIA Nsight
 Systems</a> permite monitorizar el tiempo de uso de cada kernel en la
 GPU de NVIDIA:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> /opt/nvidia/hpc_sdk/Linux_x86_64/2024/compilers/bin/nvc++ <span class="at">-o</span> simpleNVC simple.cpp  <span class="at">-mp</span><span class="op">=</span>gpu</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> /opt/nvidia/hpc_sdk/Linux_x86_64/2025/compilers/bin/nvc++ <span class="at">-o</span> simpleNVC simple.cpp  <span class="at">-mp</span><span class="op">=</span>gpu</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> nsys nvprof ./simpleNVC </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">....</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">Time</span> <span class="er">(</span><span class="ex">%</span><span class="kw">)</span>  <span class="ex">Total</span> Time <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Instances</span>  Avg <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Med</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Min</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Max</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">StdDev</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>     <span class="ex">GridXYZ</span>         BlockXYZ              Name         </span>
