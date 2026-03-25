@@ -388,18 +388,27 @@ table tr:nth-child(2n) {
 <li>La instalación está soportada a través de entornos <a href="https://anaconda.org/anaconda/conda">conda</a> como viene descrito en el repositorio. Si en el equipo de laboratorio no estuviese instalado <code>conda</code>, se puede <a href="https://repo.anaconda.com/archive/">descargar</a>:</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ex">user@host%</span> wget https://repo.anaconda.com/archive/Anaconda3-2025.12-2-Linux-x86_64.sh</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ex">user@host%</span> bash ./Anaconda3-2024.10-1-Linux-x86_64.sh</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="ex">user@host%</span> bash ./Anaconda3-2025.12-2-Linux-x86_64.sh</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="fu">yes</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="ex">user@host%</span> source ~/.bashrc</span></code></pre></div>
-<p>Antes de nada vamos a crear un entorno con la versión 3.11 de python, para posteriormente activar el entorno e instalar los paquetes de PyOMP:</p>
+<p>Vamos a crear un entorno con toda la paquetaría que se va a usar en PyOMP. Para ello emplearemos el plano de construcción contenido en el fichero <code>environmentPyOMP.yml</code> que se encuenta en los el <code>ficheros_p3-2.tar.gz</code> de la práctica. Dicho fichero contiene el nombre del entorno: <code>pyomp_psd</code>; los canales donde bajará encontrará los paquetesa descargar, y las dependencias de la paquetería:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Crear entorno</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ex">user@host%</span> conda create -n PyOMP python=3.11</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="co"># Activación</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="ex">user@host%</span> conda activate PyOMP</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="co"># Instalar paquetes</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="kw">(</span><span class="ex">PyOMP</span><span class="kw">)</span> <span class="ex">user@host%</span> conda install -c python-for-hpc -c conda-forge pyomp</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="ex">user@host%</span> conda env create -f environmentPyOMP.yml</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ex">.....</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">done</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="co"># To activate this environment, use</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="co">#     $ conda activate pyomp_psd</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a><span class="co"># To deactivate an active environment, use</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="co">#     $ conda deactivate</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a><span class="co"># Activación</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a><span class="ex">user@host%</span> conda activate pyomp_psd</span></code></pre></div>
+<p>Tiene soporte para las GPUs de NVIDIA desde la “CUDA capability” sm_50 (GeForce GTX 10xx) hasta sm_86 (Geforce RTX30xx). También tiene soporte para alguna GPUs de AMD (ej: AMD Radeon RX 6700)</p>
 <h2 class="unnumbered" data-number id="ejercicio-1-hello-world">Ejercicio 1: Hello World</h2>
 <p>El primer ejemplo “hello.py” utiliza la librería <a href="https://numba.pydata.org/">Numba</a> que permite acelerar la ejecución de funciones numéricas, mediante la compilación de código Python a código máquina optimizado con el mecanismo Just-in-Time, o JIT, lo que a su vez el estándar de compilación del LLVM permitiendo la interacción de Python con lenguajes compilados como C/C++ o Fortran.</p>
 <p>Es importante destacar en el código el decorador <code>@njit</code> que permite compilar la función <code>hello()</code> usando Numba, mejorando su rendimiento. Además este aspecto permite la utilización de librerías de paralelización como las estudiadas en la asignatura como <a href="www.openmp.org">OpenMP</a> con el decorador <code>with openmp(&quot;parallel&quot;):</code> que inicia una región paralela utilizando OpenMP. Esto significa que las instrucciones dentro de este bloque pueden ejecutarse simultáneamente por múltiples hilos.</p>
@@ -414,7 +423,7 @@ table tr:nth-child(2n) {
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>hello()</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;DONE&quot;</span>)</span></code></pre></div>
 <p>Al igual que en la práctica de OpenMP, se puede controlar el número de hilos con la variable de entorno <code>OMP_NUM_THREADS</code> como se puede observar en la siguiente ejecución:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">PyOMP</span><span class="kw">)</span> <span class="ex">user@host%</span> OMP_NUM_THREADS=2 python3 codes/hello_world.py </span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">PyOMP</span><span class="kw">)</span> <span class="ex">user@host%</span> OMP_NUM_THREADS=2 python3 hello.py </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="ex">hello</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="ex">world</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="ex">hello</span></span>
