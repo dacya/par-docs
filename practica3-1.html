@@ -312,6 +312,8 @@ background-color: #f8f8f8
       <li><a href="#variables-de-entorno" id="toc-variables-de-entorno">Variables de entorno</a></li>
       <li><a href="#ejecución-en-gpu-de-nvidia" id="toc-ejecución-en-gpu-de-nvidia">Ejecución en GPU de
       NVIDIA</a></li>
+      <li><a href="#uso-en-aulas-virtuales-fdi-linux-vgpu" id="toc-uso-en-aulas-virtuales-fdi-linux-vgpu">Uso en “Aulas
+      Virtuales FDI Linux VGPU”</a></li>
       </ul></li>
       <li><a href="#ejemplo-2-mejoras-en-la-programación-con-openmp-para-explotar-el-paralelismo-heterogéneo" id="toc-ejemplo-2-mejoras-en-la-programación-con-openmp-para-explotar-el-paralelismo-heterogéneo">Ejemplo
       2: mejoras en la programación con OpenMP para explotar el
@@ -529,6 +531,57 @@ GPU de NVIDIA:</p>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">--------</span>  <span class="at">---------------</span>  <span class="at">---------</span>  <span class="at">--------</span>  <span class="at">--------</span>  <span class="at">--------</span>  <span class="at">--------</span>  <span class="at">-----------</span>  <span class="at">--------------</span>  <span class="at">--------------</span>  <span class="at">----------------------</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">100,0</span>           33.024          1  33.024,0  33.024,0    33.024    33.024          0,0    30    1    1  1024    1    1  nvkernel_main_F21L22_2</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
+<h3 class="unnumbered" id="uso-en-aulas-virtuales-fdi-linux-vgpu">Uso en
+“Aulas Virtuales FDI Linux VGPU”</h3>
+<p>Se puede hacer funcionar el entorno de compilación en las <a href="https://ptv.ucm.es/uds/page/services">Aulas Virtuales UCM</a>
+cargando el entorno <strong>“FDI LINUX VGPU”</strong> y hacer funcionar
+la GPU Virtual mediante el paradigma de programación de
+OpenMP-offload.</p>
+<p>Sin embargo, el compilador <em>nvc</em> del “SDK para hpc de NVIDIA”
+no gestiona adecuadamente la memoria de las GPUs virtuales-VGPU y por lo
+tanto presenta problemas en ejecución. Para ello vamos a instalar el
+soporte de OpenMP del compilador de <strong>GNU-GCC</strong>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">usufdi@C-117-L-VGPU-04:~/Descargas$</span> sudo apt-get update</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usufdi@C-117-L-VGPU-04:~/Descargas$</span> sudo apt install gcc-12-offload-nvptx nvptx-tools</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usufdi@C-117-L-VGPU-04:~/Descargas$</span> sudo apt install g++-12</span></code></pre></div>
+<p>Ahora vamos a compilar el código del ejemplo <code>simple.cpp</code>
+con el compilador de GCC añadiendo los flags de compilación
+<code>-fopenmp -foffload=nvptx-none</code> para que se descarge la
+ejecución en la GPU:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">usufdi@C-117-L-VGPU-04:~/Descargas$</span> g++-12 <span class="at">-O3</span> <span class="at">-fopenmp</span> <span class="at">-foffload</span><span class="op">=</span>nvptx-none <span class="at">-fcf-protection</span><span class="op">=</span>none <span class="at">-fno-stack-protector</span> simple.cpp <span class="at">-o</span> simpleGCC</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">/usr/bin/ld:</span> /tmp/ccBldaaI.crtoffloadtable.o: warning: relocation against <span class="kw">`</span><span class="ex">__offload_funcs_end</span><span class="st">&#39; in read-only section `.rodata&#39;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/usr/bin/ld:</span> warning: creating DT_TEXTREL in a PIE</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">usufdi@C-117-L-VGPU-04:~/Descargas$</span> nsys nvprof ./simpleGCC </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">WARNING:</span> simpleGCC and any of its children processes will be profiled.</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> data...</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Num</span> devices=1</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Running</span> on GPU</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="ex">2</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="ex">4</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ex">6</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ex">10</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="ex">12</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="ex">14</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ex">16</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="ex">18</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="ex">20</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="ex">22</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="ex">24</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="ex">26</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="ex">28</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="ex">30</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="ex">Generating</span> <span class="st">&#39;/tmp/nsys-report-c5fe.qdstrm&#39;</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="ex">....</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a> <span class="ex">Time</span> <span class="er">(</span><span class="ex">%</span><span class="kw">)</span>  <span class="ex">Total</span> Time <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Instances</span>  Avg <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>   <span class="ex">Med</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>   <span class="ex">Min</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">Max</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>  <span class="ex">StdDev</span> <span class="er">(</span><span class="ex">ns</span><span class="kw">)</span>       <span class="ex">Name</span>     </span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a> <span class="ex">--------</span>  <span class="at">---------------</span>  <span class="at">---------</span>  <span class="at">---------</span>  <span class="at">---------</span>  <span class="at">--------</span>  <span class="at">--------</span>  <span class="at">-----------</span>  <span class="at">--------------</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="ex">100,0</span>          101.984          1  101.984,0  101.984,0   101.984   101.984          0,0  main<span class="va">$_omp_fn$0</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="ex">....</span></span></code></pre></div>
 <h2 class="unnumbered" id="ejemplo-2-mejoras-en-la-programación-con-openmp-para-explotar-el-paralelismo-heterogéneo">Ejemplo
 2: mejoras en la programación con OpenMP para explotar el paralelismo
 heterogéneo</h2>
@@ -620,59 +673,59 @@ uso de recursos</h3>
 <p>El código “test_no_collapse.cpp” aplica la paralelización a nivel de
 bucle <code>for (b = 0; b &lt; BLOCKS; b++)</code> siendo <strong>BLOCKS
 4</strong></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload the kernel with no collapse clause */</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for \</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> ur <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> us <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> ut <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> t<span class="op">=</span><span class="dv">0</span> <span class="op">;</span> t <span class="op">&lt;</span> TIMES<span class="op">;</span> t<span class="op">++)</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span>l <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> l <span class="op">&lt;</span> P<span class="op">;</span> l<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>              ur <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>i<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> l<span class="op">,</span> j<span class="op">,</span> k<span class="op">)];</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>              us <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>k<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> l<span class="op">,</span> k<span class="op">)];</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>              ut <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>j<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> j<span class="op">,</span> l<span class="op">)];</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>          w<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> j<span class="op">,</span> k<span class="op">)]</span> <span class="op">=</span> ur <span class="op">*</span> us <span class="op">*</span> ut<span class="op">;</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload the kernel with no collapse clause */</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for \</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> ur <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> us <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>          <span class="dt">float</span> ut <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> t<span class="op">=</span><span class="dv">0</span> <span class="op">;</span> t <span class="op">&lt;</span> TIMES<span class="op">;</span> t<span class="op">++)</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span>l <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> l <span class="op">&lt;</span> P<span class="op">;</span> l<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>              ur <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>i<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> l<span class="op">,</span> j<span class="op">,</span> k<span class="op">)];</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>              us <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>k<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> l<span class="op">,</span> k<span class="op">)];</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>              ut <span class="op">+=</span> dx<span class="op">[</span>IDX2<span class="op">(</span>j<span class="op">,</span> l<span class="op">)]</span> <span class="op">*</span> u<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> j<span class="op">,</span> l<span class="op">)];</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>          w<span class="op">[</span>IDX4<span class="op">(</span>b<span class="op">,</span> i<span class="op">,</span> j<span class="op">,</span> k<span class="op">)]</span> <span class="op">=</span> ur <span class="op">*</span> us <span class="op">*</span> ut<span class="op">;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
 <p>Evaluando la ejecución con variable entorno
 <code>LIBOMPTARGET_DEBUG=1</code> las iteraciones del bucle=4 porque
 <em>BLOCKS=4</em> se observa que el número de teams es <strong>Number of
 teams = {4, 1, 1}</strong>, es decir que <strong>solamente 4 EUs están
 siendo utilizadas simultáneamente</strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> icpx <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 test_no_collapse.cpp</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Assumed kernel SIMD width is 16</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Preferred team size is multiple of 32</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 0: lower bound = 0, upper bound = 3, Stride = 1</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Team sizes = {1, 1, 1}</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Number of teams = {4, 1, 1}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> icpx <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 test_no_collapse.cpp</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Assumed kernel SIMD width is 16</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Preferred team size is multiple of 32</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 0: lower bound = 0, upper bound = 3, Stride = 1</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Team sizes = {1, 1, 1}</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Number of teams = {4, 1, 1}</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
 <p>Si añadimos las cláusulas <em>collapse</em> se mejora utilización de
 recursos. Por ejemplo en el código “test_collapse2.cpp” se añade la
 clásula <strong>collapse(2)</strong>, las iteraciones del bucle=8 porque
 BLOCKS*P = 4*8 = 32 * SIMD: 16 * Team sizes:{1,1,1} y Número de teams:
 {8,4,1} luego <strong>Número total teams: {8,4,1}=32</strong></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> icpx <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 test_collapse2.cpp</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Assumed kernel SIMD width is 16</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Preferred team size is multiple of 32</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 0: lower bound = 0, upper bound = 7, Stride = 1</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 1: lower bound = 0, upper bound = 3, Stride = 1</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Team sizes = {1, 1, 1}</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Number of teams = {8, 4, 1}</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> icpx <span class="at">-fiopenmp</span> <span class="at">-fopenmp-targets</span><span class="op">=</span>spir64 test_collapse2.cpp</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Assumed kernel SIMD width is 16</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Preferred team size is multiple of 32</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 0: lower bound = 0, upper bound = 7, Stride = 1</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Loop 1: lower bound = 0, upper bound = 3, Stride = 1</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Team sizes = {1, 1, 1}</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Target</span> LEVEL_ZERO RTL <span class="at">--</span><span class="op">&gt;</span> Number of teams = {8, 4, 1}</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
 <p>De igual manera están los códigos “test_collapse3.cpp” (<em>Team
 sizes:{8,1,1} y Número de teams: {1,8,4})</em> y “test_collapse4.cpp”
 (<em>Team sizes:{32,1,1} y Número de teams: {64,1,1}</em>) mejorando la
@@ -700,43 +753,43 @@ GPU-CPU</figcaption>
 impacto de transferir <em>u[0:SIZE], dx[0:P * P], w[0:SIZE]</em> en el
 kernel#2, cuando ya está disponible en la memoria de la GPU tras la
 ejecución del kernel#1.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #1 */</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for collapse(4) \</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(to: u[0:SIZE], dx[0:P * P]) map(from: w[0:SIZE]) \</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">.....</span> </span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #2 */</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for collapse(4) \</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(to: u[0:SIZE], dx[0:P * P]) map(tofrom: w[0:SIZE]) \</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">.....</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out <span class="op">&amp;&gt;</span> test_no_target_enter_exit_data.debug</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> grep <span class="st">&quot;omptarget --&gt; Moving&quot;</span> test_no_target_enter_exit_data.debug </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9a1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cec50000</span><span class="kw">)</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 256 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9e1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cc6d0000</span><span class="kw">)</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #1 */</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for collapse(4) \</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(to: u[0:SIZE], dx[0:P * P]) map(from: w[0:SIZE]) \</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">.....</span> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #2 */</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target teams distribute parallel for collapse(4) \</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(to: u[0:SIZE], dx[0:P * P]) map(tofrom: w[0:SIZE]) \</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="pp">    private(b, i, j, k, l)</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> BLOCKS<span class="op">;</span> b<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> P<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> <span class="op">(</span>j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> P<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span>k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> P<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">.....</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_DEBUG=1 ./a.out <span class="op">&amp;&gt;</span> test_no_target_enter_exit_data.debug</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">user@system:~$</span> grep <span class="st">&quot;omptarget --&gt; Moving&quot;</span> test_no_target_enter_exit_data.debug </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9a1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cec50000</span><span class="kw">)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 256 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9e1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cc6d0000</span><span class="kw">)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ex">omptarget</span> <span class="at">--</span><span class="op">&gt;</span> Moving 8192 bytes <span class="er">(</span><span class="ex">tgt:0x00007598cec52000</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> <span class="er">(</span><span class="ex">hst:0x00007ffea8b9c1c0</span><span class="kw">)</span></span></code></pre></div>
 <blockquote>
 <p>[!WARNING]<br />
 ¿hace falta en el kernel#2 enviar ‘u’, ‘dx’ y ‘w’?</p>
@@ -746,19 +799,19 @@ ejecución del kernel#1.</p>
 <code>omp target exit data map</code> como en el código
 “test_target_enter_exit_data.cpp”</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* map data to device. alloc for w avoids map(tofrom: w[0:SIZE]) on target by default. */</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target enter data map(to: u[0:SIZE], dx[0:P * P]) \</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(alloc: w[0:SIZE])</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #1 */</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #2 */</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target exit data map(from: w[0:SIZE])</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* map data to device. alloc for w avoids map(tofrom: w[0:SIZE]) on target by default. */</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target enter data map(to: u[0:SIZE], dx[0:P * P]) \</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    map(alloc: w[0:SIZE])</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #1 */</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* offload kernel #2 */</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="pp">#pragma omp target exit data map(from: w[0:SIZE])</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
 <h2 class="unnumbered" id="ejercicio-3-inferencia-cnn-con-openmp-entregra">Ejercicio 3:
 Inferencia CNN con OpenMP (entregra)</h2>
 <p>El objetivo de esta práctica es modificar un código en C++ que
@@ -799,16 +852,16 @@ entre el <strong>0 y el 9</strong>.</li>
 </ul>
 <p>El modelo implementado está basado en una arquitectura similar a
 propuesta en PyTorch en las siguiente líneas de código:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the model</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SimpleCNN(nn.Module):</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(SimpleCNN, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv1 <span class="op">=</span> nn.Conv2d(in_channels<span class="op">=</span><span class="dv">1</span>, out_channels<span class="op">=</span><span class="dv">1</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)  <span class="co"># 28x28 -&gt; 28x28</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.relu <span class="op">=</span> nn.ReLU()</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pool <span class="op">=</span> nn.MaxPool2d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)  <span class="co"># 28x28 -&gt; 14x14</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fc1 <span class="op">=</span> nn.Linear(<span class="dv">1</span> <span class="op">*</span> <span class="dv">14</span> <span class="op">*</span> <span class="dv">14</span>, <span class="dv">10</span>)  <span class="co"># Fully Connected Layer (10 classes)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the model</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SimpleCNN(nn.Module):</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(SimpleCNN, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.conv1 <span class="op">=</span> nn.Conv2d(in_channels<span class="op">=</span><span class="dv">1</span>, out_channels<span class="op">=</span><span class="dv">1</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)  <span class="co"># 28x28 -&gt; 28x28</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.relu <span class="op">=</span> nn.ReLU()</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pool <span class="op">=</span> nn.MaxPool2d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)  <span class="co"># 28x28 -&gt; 14x14</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fc1 <span class="op">=</span> nn.Linear(<span class="dv">1</span> <span class="op">*</span> <span class="dv">14</span> <span class="op">*</span> <span class="dv">14</span>, <span class="dv">10</span>)  <span class="co"># Fully Connected Layer (10 classes)</span></span></code></pre></div>
 <p>La siguiente imagén muestra un diagrama de la arquitectura del modelo
 seguido que puede resurmirse en el procesado de las capas: [Input] →
 [Conv2d] → [ReLU] → [MaxPool2d] → [FullyConected] → [Output]</p>
@@ -823,11 +876,11 @@ funciones críticas del proceso de inferencia utilizando <strong>OpenMP
 target offloading</strong>, para ello se centrará en el código que
 implementan las funciones Conv2d+ReLU, MaxPool2d y FullyConected que
 aparecen resaltadas a continuación:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>conv2d<span class="op">(</span>input<span class="op">,</span> conv_out<span class="op">,</span> conv1_weights<span class="op">,</span> height<span class="op">,</span> width<span class="op">,</span> <span class="op">*</span>conv1_biases<span class="op">);</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>maxpool2d<span class="op">(</span>conv_out<span class="op">,</span> pooled<span class="op">,</span> height<span class="op">,</span> width<span class="op">);</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>fully_connected<span class="op">(</span>pooled<span class="op">,</span> fc1_weights<span class="op">,</span> fc1_biases<span class="op">,</span> output<span class="op">,</span> size_fc1_biases<span class="op">,</span> fc_input_size<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>conv2d<span class="op">(</span>input<span class="op">,</span> conv_out<span class="op">,</span> conv1_weights<span class="op">,</span> height<span class="op">,</span> width<span class="op">,</span> <span class="op">*</span>conv1_biases<span class="op">);</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>maxpool2d<span class="op">(</span>conv_out<span class="op">,</span> pooled<span class="op">,</span> height<span class="op">,</span> width<span class="op">);</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>fully_connected<span class="op">(</span>pooled<span class="op">,</span> fc1_weights<span class="op">,</span> fc1_biases<span class="op">,</span> output<span class="op">,</span> size_fc1_biases<span class="op">,</span> fc_input_size<span class="op">);</span></span></code></pre></div>
 <p>Para identificar con más sencillez dicha parte del código, estas
 líneas corresponde a la monitorización del tiempo de ejecución del
 modelo entre las llamadas a la función <code>get_ms()</code> que captura
