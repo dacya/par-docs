@@ -530,7 +530,11 @@ disponibles, ejecuta <code>conda env list</code>, y el entorno que
 contiene el Intel® Distribution for Python es el <strong>“ipd”</strong>,
 pudiendo arrancarlo con el comando <code>conda activate ipd</code>. Una
 vez en el el entorno “idp” se puede abrir los cuadernos de Jupyter:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">idp</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ jupyter notebook</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ conda activate ipd</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">idp</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ python3 <span class="at">-m</span> pip install jupyter</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">idp</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ conda install ipykernel</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">idp</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ python3 <span class="at">-m</span> ipykernel install <span class="at">--user</span> <span class="at">--name</span> idp <span class="at">--display-name</span> <span class="st">&quot;Python idp&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">idp</span><span class="kw">)</span> <span class="ex">user@ptoXXXX:</span> $ jupyter notebook</span></code></pre></div>
 <h1 class="unnumbered" id="ejercicios">Ejercicios</h1>
 <h2 class="unnumbered" id="ejercicio-1-vectorización-en-numpy">Ejercicio
 1: Vectorización en numpy</h2>
