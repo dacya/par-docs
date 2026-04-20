@@ -374,27 +374,26 @@ table tr:nth-child(2n) {
 <p>El principal objetivo de esta práctica es familiarizarse con el manejo básico de hilos, procesos y sockets en Python sobre Linux. Como parte de la práctica se proporciona un breve tutorial que ilustra las diferencias entre los hilos y los procesos en Python, en cuanto a programación, limitaciones y casos de uso típicos.</p>
 <p>En el <a href="./code/ficheros_p4-1.tar.gz">fichero comprimido</a> con el código y otros recursos de la práctica se proporciona una carpeta con el código fuente asociado a cada ejercicio.</p>
 <h1 id="preparación-del-entorno-de-trabajo-con-vscode"><span class="header-section-number">2</span> Preparación del entorno de trabajo con VSCode</h1>
-<p>Para el desarrollo de esta práctica es imprescindible utilizar Linux, ya sea de forma nativa (version instalada en equipos del laboratorio) o mediante el proyecto VSCode basado en Docker y DevContainers que se utilizó para las prácticas del primer módulo de la asignatura. Además de los módulos estándar de Python, esta práctica requiere el uso del módulo <code>pandas</code>.</p>
-<p>Se aconseja crear un entorno virtual de Python en una carpeta “.venv” situada en la raíz de nuestro proyecto VSCode. Este proyecto puede estar en Linux nativo o coincidir con la carpeta del proyecto DevContainers del primer módulo (<code>PARProject</code>). Abriremos dicha carpeta con VSCode, y una vez arrancado el proyecto, procederemos a crear el entorno virtual como sigue:</p>
-<p>Tras asegurarnos que el software necesario para creación de entornos virtuales está instalado (sobre el entorno Debian/Docker ejecutar <code>apt install python3-venv</code> para instalar dicho software), procederemos a crear el entorno virtual como sigue:</p>
+<p>Para el desarrollo de esta práctica es imprescindible utilizar Linux, ya sea de forma nativa (p.ej. versión instalada en equipos del laboratorio con Python 3.12) o mediante el proyecto VSCode basado en Docker y DevContainers que se utilizó para las prácticas del primer módulo de la asignatura. Además de los módulos estándar de Python, esta práctica requiere el uso del módulo <code>pandas</code>.</p>
+<p>Para trabajar comodamente en el proyecto, se aconseja crear un entorno virtual de Python en una carpeta “.venv” situada en la raíz de nuestro proyecto VSCode. Este proyecto puede usarse desde Linux nativo o usando Docker (empleando la carpeta del proyecto DevContainers del primer módulo, llamada <code>PARProject</code>). Abriremos dicha carpeta con VSCode, y una vez arrancado el proyecto, procederemos a crear el entorno virtual como sigue:</p>
 <ol type="1">
 <li><p>Abrir una terminal en VSCode y situarse en la carpeta raíz del proyecto</p></li>
-<li><p>SOLO Si usamos PARProject, se ha de instalar el software necesario para creación de entornos virtuales con los siguientes comandos:</p>
+<li><p>SOLO si usamos el proyecto basado en Docker (PARProject), se ha de instalar el software necesario para creación de entornos virtuales con los siguientes comandos:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">sudo</span> apt update</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="fu">sudo</span> apt install python3-venv</a></code></pre></div></li>
-<li><p>Crear entorno virtual nuevo en <code>.venv</code> y activarlo</p>
+<li><p>Crear entorno virtual nuevo en <code>.venv</code> y activarlo:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">python3</span> -m venv .venv</a>
 <a class="sourceLine" id="cb2-2" title="2">$ <span class="bu">.</span> <span class="ex">.venv/bin/activate</span></a></code></pre></div></li>
 <li><p>Actualizar pip:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1">$ <span class="ex">pip</span> install --upgrade pip</a></code></pre></div></li>
-<li><p>Instalar dependencias necesarias para esta práctica</p>
+<li><p>Instalar dependencias necesarias para esta práctica:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1">$ <span class="ex">pip</span> install pandas</a></code></pre></div></li>
 </ol>
-<p>Una vez realizada la instalacion del virtual env se ha de instalar la extension “Python Extension Pack” si no se encuentra ya instalada. Para ello se ha de acceder a la sección de “Extensions” en la barra lateral izquierda de VSCode, y proceder a instalar dicha extension.</p>
+<p>Una vez finalizada la creación y activación del entorno virtual se ha de instalar la extension “Python Extension Pack” de VSCode si no se encuentra ya instalada. Para ello se ha de acceder a la sección de “Extensions” en la barra lateral izquierda de VSCode, y proceder a instalar dicha extensión si procede.</p>
 <p>Finalmente, para que todo funcione correctamente se han de realizar dos acciones adicionales:</p>
 <ol type="1">
 <li>Reiniciar VSCode</li>
-<li>Abrir la paleta de comandos de VSCode y teclear “Python: Select Interpreter”. Seleccionar el intérprete de Python que corresponde al <strong>virtual environment</strong> que se acaba de crear.</li>
+<li>Abrir la paleta de comandos de VSCode y teclear “Python: Select Interpreter”. Una vez ahí, seleccionar el intérprete de Python que corresponde al <em>virtual environment</em> que se acaba de crear.</li>
 </ol>
 <h1 id="ejercicios"><span class="header-section-number">3</span> Ejercicios</h1>
 <h2 id="ejercicio-1.-concurrencia-en-python-usando-threading-y-multiprocessing" class="unnumbered">Ejercicio 1. Concurrencia en Python usando <code>threading</code> y <code>multiprocessing</code></h2>
@@ -406,7 +405,7 @@ table tr:nth-child(2n) {
 <li>Modelar sistemas con componentes independientes que se comunican entre sí (como productor-consumidor, cliente-servidor, etc.).</li>
 </ul>
 <h3 id="limitaciones-del-intérprete-de-python-y-casos-de-uso" class="unnumbered">Limitaciones del intérprete de Python y casos de uso</h3>
-<p>A la hora de explotar concurrencia, además de tener en cuenta las diferencias entre procesos e hilos introducidas en el primer módulo de la asignatura, debemos considerar un aspecto clave de la implementación más extendida de Python, llamada CPython. Esta implementación hace uso de un cerrojo global del intérprete denominado <em>Global Interpreter Lock</em> (GIL), que <strong>restringe la ejecución simultánea de múltiples hilos en un único proceso de Python</strong><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Es decir, aunque creemos varios hilos en nuestro programa, <strong>solo uno puede ejecutar bytecode de Python a la vez</strong>. Esto significa que incluso en máquinas con múltiples núcleos, los hilos de Python <strong>no pueden ejecutar código Python en paralelo</strong> si están haciendo trabajo intensivo de CPU.</p>
+<p>A la hora de explotar concurrencia, además de tener en cuenta las diferencias entre procesos e hilos introducidas en el primer módulo de la asignatura, debemos considerar un aspecto clave de la implementación más extendida de Python, llamada CPython. Por defecto, esta implementación hace uso de un cerrojo global del intérprete denominado <em>Global Interpreter Lock</em> (GIL), que <strong>restringe la ejecución simultánea de múltiples hilos en un único proceso de Python</strong><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Es decir, aunque creemos varios hilos en nuestro programa, <strong>solo uno de ellos puede ejecutar bytecode de Python a la vez</strong>. Esto significa que incluso en máquinas con múltiples núcleos, los hilos de Python <strong>no pueden ejecutar código Python en paralelo</strong> si están haciendo trabajo intensivo de CPU.</p>
 <p>El GIL existe por varias razones históricas y técnicas:</p>
 <ul>
 <li>CPython <strong>no tiene un recolector de basura con contadores de referencias seguros en entornos multihilo</strong>. El GIL simplifica la gestión de memoria y evita que haya que usar bloqueos (<em>locks</em>) finos alrededor de cada objeto.</li>
