@@ -1,14 +1,14 @@
 #!/bin/bash
 documents=('../practica1-1.md practica1-1' \
-#		   '../practica1-2.md practica1-2' \
-#		   '../practica1-3.md practica1-3' \
-#		   '../practica2-1.md practica2-1' \
-#		   '../practica2-2.md practica2-2' \
+		   '../practica1-2.md practica1-2' \
+		   '../practica1-3.md practica1-3' \
+		   '../practica2-1.md practica2-1' \
+		   '../practica2-2.md practica2-2' \
 		   '../practica3-1.md practica3-1' \
-#		   '../practica3-2.md practica3-2' \
-#		   '../practica3-3.md practica3-3' \
-#		   '../practica4-1.md practica4-1' \
-#		   '../practica4-2.md practica4-2' \
+		   '../practica3-2.md practica3-2' \
+		   '../practica3-3.md practica3-3' \
+		   '../practica4-1.md practica4-1' \
+		   '../practica4-2.md practica4-2' \
 		   '../entorno-vscode-docker.md entorno-vscode-docker' )
 
 ndocs=${#documents[@]}
