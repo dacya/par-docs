@@ -8,6 +8,7 @@ codes=('practica1-1 ficheros_p1-1.tar.gz'  \
     	'practica3-2 ficheros_p3-2.tar.gz' \
     	'practica3-3 ficheros_p3-3.tar.gz' \
     	'practica4-1 ficheros_p4-1.tar.gz' \
+    	'practica4-2 ficheros_p4-2.tar.gz' \
     	)
 
 codedir="../Codigos"
